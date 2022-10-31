@@ -60,6 +60,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'ChatList',
+    timestamps: false,
   });
   return ChatList;
 };

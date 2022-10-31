@@ -103,6 +103,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'SalePosts',
+    timestamps: false,
   });
   return SalePosts;
 };

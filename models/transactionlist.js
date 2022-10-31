@@ -49,6 +49,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'TransactionList',
+    timestamps: false,
   });
   return TransactionList;
 };
