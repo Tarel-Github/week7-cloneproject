@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Users extends Model {
     /**
@@ -12,73 +10,78 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
 
-      this.hasMany(models.Notifications,{
+      this.hasMany(models.Notifications, {
         as: 'Notifications',
-        foreignKey:'userId'
-      })
-      this.hasMany(models.TransactionList,{
+        foreignKey: 'userId',
+      });
+      this.hasMany(models.TransactionList, {
         as: 'TransactionList',
-        foreignKey:'userId'
-      })
-      this.hasMany(models.Wishes,{
+        foreignKey: 'userId',
+      });
+      this.hasMany(models.Wishes, {
         as: 'Wishes',
-        foreignKey:'userId'
-      })
-      this.hasMany(models.SalePosts,{
+        foreignKey: 'userId',
+      });
+      this.hasMany(models.SalePosts, {
         as: 'SalePosts',
-        foreignKey:'userId'
-      })
-      this.hasMany(models.Chats,{
+        foreignKey: 'userId',
+      });
+      this.hasMany(models.Chats, {
         as: 'Chats',
-        foreignKey:'userId'
-      })
-      this.hasMany(models.ChatList,{
+        foreignKey: 'userId',
+      });
+      this.hasMany(models.ChatList, {
         as: 'ChatList',
-        foreignKey:'userId'
-      })
+        foreignKey: 'userId',
+      });
 
-      this.belongsTo(models.Locations, { foreignKey: 'locationId', targetKey: 'locationId' });
-
+      this.belongsTo(models.Locations, {
+        foreignKey: 'locationId',
+        targetKey: 'locationId',
+      });
     }
   }
-  Users.init({
-    userId: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true
+  Users.init(
+    {
+      userId: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      locationId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Locations',
+          key: 'locationId',
+        },
+      },
+      nickname: {
+        type: DataTypes.STRING(40),
+        allowNull: false,
+        unique: true,
+      },
+      password: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING(40),
+        allowNull: false,
+        unique: true,
+      },
+      profileImage: {
+        type: DataTypes.STRING(500),
+        allowNull: true,
+      },
+      createdAt: DataTypes.STRING(40),
+      updatedAt: DataTypes.STRING(40),
     },
-    locationId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references:{
-        model: 'Locations',
-        key:'locationId'
-      }
-    },
-    nickname: {
-      type: DataTypes.STRING(40),
-      allowNull: false,
-      unique: true,
-    },
-    password:  {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    email:{
-      type: DataTypes.STRING(40),
-      allowNull: false,
-      unique: true,
-    },
-    profileImage:{
-      type: DataTypes.STRING(500),
-      allowNull: false,
-    },
-    createdAt: DataTypes.STRING(40),
-    updatedAt: DataTypes.STRING(40)
-  }, {
-    sequelize,
-    modelName: 'Users',
-    timestamps: false,
-  });
+    {
+      timestamps: false,
+      sequelize,
+      modelName: 'Users',
+    }
+  );
   return Users;
 };

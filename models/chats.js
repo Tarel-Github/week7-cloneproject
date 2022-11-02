@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Chats extends Model {
     /**
@@ -11,45 +9,53 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.Users, { foreignKey: 'userId', targetKey: 'userId' });
-      this.belongsTo(models.ChatList, { foreignKey: 'chatListId', targetKey: 'chatListId' });
-
+      this.belongsTo(models.Users, {
+        foreignKey: 'userId',
+        targetKey: 'userId',
+      });
+      this.belongsTo(models.ChatList, {
+        foreignKey: 'chatListId',
+        targetKey: 'chatListId',
+      });
     }
   }
-  Chats.init({
-    chatId: {
-      primaryKey: true,
-      autoIncrement: true,
-      type: DataTypes.INTEGER,
+  Chats.init(
+    {
+      chatId: {
+        primaryKey: true,
+        autoIncrement: true,
+        type: DataTypes.INTEGER,
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'userId',
+        },
+      },
+      chatListId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'ChatList',
+          key: 'chatListId',
+        },
+      },
+      message: {
+        type: DataTypes.TEXT,
+      },
+      isRead: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      createdAt: {
+        type: DataTypes.STRING,
+      },
     },
-    userId: {
-      type: DataTypes.INTEGER,
-      references:{
-        model: 'Users',
-        key: 'userId'
-      }
-    },
-    chatListId:{
-      type: DataTypes.INTEGER,
-      references:{
-        model: 'ChatList',
-        key: 'chatListId'
-      }
-    },
-    message:{
-      type: DataTypes.TEXT,
-    },
-    isRead:{
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    createdAt:{
-      type: DataTypes.STRING
+    {
+      timestamps: false,
+      sequelize,
+      modelName: 'Chats',
     }
-  }, {
-    sequelize,
-    modelName: 'Chats',
-    timestamps: false,
-  });
+  );
   return Chats;
 };

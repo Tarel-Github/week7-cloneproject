@@ -6,31 +6,31 @@ module.exports = {
       postId: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
-        primaryKey: true
+        primaryKey: true,
       },
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: 'Users',
-          key: 'userId'
-        }
+          key: 'userId',
+        },
       },
       categoryId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: 'Categories',
-          key: 'categoryId'
-        }
+          key: 'categoryId',
+        },
       },
       locationId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: 'Locations',
-          key: 'locationId'
-        }
+          key: 'locationId',
+        },
       },
       title: {
         type: Sequelize.STRING,
@@ -51,6 +51,7 @@ module.exports = {
       status: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        defaultValue: 0,
       },
       wishCount: {
         type: Sequelize.INTEGER,
@@ -62,15 +63,15 @@ module.exports = {
       },
       createdAt: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       updatedAt: {
         type: Sequelize.STRING,
-        allowNull: false
-      }
+        allowNull: false,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('SalePosts');
-  }
+  },
 };

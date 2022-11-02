@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class SalePosts extends Model {
     /**
@@ -12,98 +10,109 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
 
-
-      this.hasMany(models.Wishes,{
+      this.hasMany(models.Wishes, {
         as: 'Wishes',
-        foreignKey:'postId'
-      })
-      this.hasMany(models.TransactionList,{
+        foreignKey: 'postId',
+      });
+      this.hasMany(models.TransactionList, {
         as: 'TransactionList',
-        foreignKey:'postId'
-      })
-      this.hasMany(models.ChatList,{
+        foreignKey: 'postId',
+      });
+      this.hasMany(models.ChatList, {
         as: 'ChatList',
-        foreignKey:'postId'
-      })
+        foreignKey: 'postId',
+      });
 
-      this.belongsTo(models.Locations, { foreignKey: 'locationId', targetKey: 'locationId' });
-      this.belongsTo(models.Categories, { foreignKey: 'categoryId', targetKey: 'categoryId' });
-      this.belongsTo(models.Users, { foreignKey: 'userId', targetKey: 'userId' });
-
+      this.belongsTo(models.Locations, {
+        foreignKey: 'locationId',
+        targetKey: 'locationId',
+      });
+      this.belongsTo(models.Categories, {
+        foreignKey: 'categoryId',
+        targetKey: 'categoryId',
+      });
+      this.belongsTo(models.Users, {
+        foreignKey: 'userId',
+        targetKey: 'userId',
+      });
     }
   }
-  SalePosts.init({
-
-    postId: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true
+  SalePosts.init(
+    {
+      postId: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'userId',
+        },
+      },
+      categoryId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Categories',
+          key: 'categoryId',
+        },
+      },
+      locationId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Locations',
+          key: 'locationId',
+        },
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      content: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      postImgUrl: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      price: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      status: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      wishCount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      chatCount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      createdAt: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      updatedAt: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     },
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Users',
-        key: 'userId'
-      }
-    },
-    categoryId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Categories',
-        key: 'categoryId'
-      }
-    },
-    locationId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Locations',
-        key: 'locationId'
-      }
-    },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    content: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    postImgUrl: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    price: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    status: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    wishCount: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    chatCount: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    createdAt: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    updatedAt: {
-      type: DataTypes.STRING,
-      allowNull: false
+    {
+      timestamps: false,
+      sequelize,
+      modelName: 'SalePosts',
     }
-
-  }, {
-    sequelize,
-    modelName: 'SalePosts',
-    timestamps: false,
-  });
+  );
   return SalePosts;
 };

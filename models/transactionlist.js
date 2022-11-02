@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class TransactionList extends Model {
     /**
@@ -11,45 +9,49 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.Users, { foreignKey: 'userId', targetKey: 'userId' });
-      this.belongsTo(models.SalePosts, { foreignKey: 'postId', targetKey: 'postId' });
-
-
+      this.belongsTo(models.Users, {
+        foreignKey: 'userId',
+        targetKey: 'userId',
+      });
+      this.belongsTo(models.SalePosts, {
+        foreignKey: 'postId',
+        targetKey: 'postId',
+      });
     }
   }
-  TransactionList.init({
-
-    transactionId:{
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true
+  TransactionList.init(
+    {
+      transactionId: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      postId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'SalePosts',
+          key: 'postId',
+        },
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'userId',
+        },
+      },
+      createdAt: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     },
-    postId:{
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references:{
-        model: 'SalePosts',
-        key: 'postId'
-      }
-    },
-    userId:{
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references:{
-        model: 'Users',
-        key: 'userId'
-      }
-    },
-    createdAt:{
-      type: DataTypes.STRING,
-      allowNull: false,
+    {
+      timestamps: false,
+      sequelize,
+      modelName: 'TransactionList',
     }
-    
-
-  }, {
-    sequelize,
-    modelName: 'TransactionList',
-    timestamps: false,
-  });
+  );
   return TransactionList;
 };
