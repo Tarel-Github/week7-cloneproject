@@ -6,40 +6,39 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
-        primaryKey: true
+        primaryKey: true,
       },
       locationId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references:{
+        references: {
           model: 'Locations',
-          key:'locationId'
-        }
+          key: 'locationId',
+        },
       },
       nickname: {
         type: Sequelize.STRING(40),
         allowNull: false,
         unique: true,
       },
-      password:  {
+      password: {
         type: Sequelize.STRING(100),
         allowNull: false,
       },
-      email:{
+      email: {
         type: Sequelize.STRING(40),
         allowNull: false,
         unique: true,
       },
-      profileImage:{
+      profileImage: {
         type: Sequelize.STRING(500),
-        allowNull: false,
+        allowNull: true,
       },
       createdAt: Sequelize.STRING(40),
-      updatedAt: Sequelize.STRING(40)
-
+      updatedAt: Sequelize.STRING(40),
     });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Users');
-  }
+  },
 };

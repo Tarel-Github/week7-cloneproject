@@ -6,11 +6,13 @@ class PostController {
   // 위치별 거래글 조회
   findPostByLoc = async (req, res, next) => {
     try {
-      // const { locationId } = res.locals.user; // user랑 합치면 이걸로 돌려놔야함
-      const { locationId } = req.params; // 임시
+      const { locationId } = res.locals.user;
+
       const locationPost = await this.postService.findPostByLoc(locationId);
 
-      res.status(200).send({ data: locationPost });
+      res.status(200).json({ data: locationPost });
+      // res.status(200).json({ data: locationPost });
+      // res.status(200).send({ data: locationPost });
     } catch (err) {
       next(err);
     }
@@ -23,23 +25,25 @@ class PostController {
 
       const categoryPost = await this.postService.findPostByCat(categoryId);
 
-      res.status(200).send(categoryPost);
+      res.status(200).send({ data: categoryPost });
     } catch (err) {
       next(err);
     }
   };
 
-  // 제목검색 거래글 조회 검색기능 왜 잘될까?
+  // 제목검색 거래글 조회 검색기능
   findPostByTitle = async (req, res, next) => {
     try {
       let { keyword } = req.query;
+
       keyword = keyword.trim();
 
-      if (keyword < 1) throw new Error('키워드를 두 글자 이상 입력해주세요');
+      if (keyword.length < 2)
+        throw new Error('키워드를 두 글자 이상 입력해주세요');
 
       const titlePost = await this.postService.findPostByTitle(keyword);
 
-      res.status(200).send(titlePost);
+      res.status(200).send({ data: titlePost });
     } catch (err) {
       next(err);
     }
@@ -54,10 +58,17 @@ class PostController {
 
       const findOnePost = await this.postService.findOnePost(postId);
 
-      // let isWish = await this.postService.isWish(postId);
+      const isWish = await this.postService.isWish(postId);
 
-      console.log('controller detail');
-      return res.status(200).send(findOnePost);
+      const otherPosts = await this.postService.findPostByUser(
+        findOnePost.userId,
+        postId
+      );
+
+      // res.status(200).send({ data: findOnePost, otherPosts: otherPosts });
+      res.status(200).send({
+        data: { post: findOnePost, isWish: isWish, otherPosts: otherPosts },
+      });
     } catch (err) {
       next(err);
     }
@@ -66,9 +77,15 @@ class PostController {
   // 거래글 생성
   createPost = async (req, res, next) => {
     try {
-      await this.postService.createPost(req, res);
+      const post = await this.postService.createPost(req, res);
 
-      res.status(200).send({ ok: 'true', message: '거래글이 생성되었습니다.' });
+      res
+        .status(200)
+        .send({
+          ok: true,
+          message: '거래글이 생성되었습니다.',
+          postId: post.postId,
+        });
     } catch (err) {
       next(err);
     }
@@ -77,34 +94,9 @@ class PostController {
   // 거래글 수정
   updatePost = async (req, res, next) => {
     try {
-      // const { userId, locationId } = res.locals.user;
-      const userId = 1; // 임시
-      const locationId = 1; // 임시
+      await this.postService.updatePost(req, res);
 
-      const { postId } = req.params;
-
-      const { categoryId, title, content, postImgUrl, price } = req.body;
-
-      // title 없을 때
-      if (!title) res.status(400).send({ message: '제목을 입력해주세요.' });
-      // title 공백으로 시작할 때
-      else if (/^[\s]+/.test(title))
-        res
-          .status(400)
-          .send({ message: '제목은 공백으로 시작할 수 없습니다.' });
-      else if (title) {
-        const updatePost = await this.postService.updatePost(
-          postId,
-          userId,
-          categoryId,
-          locationId,
-          title,
-          content,
-          postImgUrl,
-          price
-        );
-        return res.status(200).send(updatePost);
-      }
+      res.status(200).send({ ok: true, message: '거래글이 수정되었습니다.' });
     } catch (err) {
       next(err);
     }
@@ -113,20 +105,9 @@ class PostController {
   // 거래글 status 수정
   updateStatus = async (req, res, next) => {
     try {
-      // const { userId } = res.locals.user;
-      const userId = 1; // 임시
+      await this.postService.updateStatus(req, res);
 
-      const { postId } = req.params;
-
-      const { status } = req.body;
-
-      const updateStatus = await this.postService.updateStatus(
-        postId,
-        userId,
-        status
-      );
-
-      return res.status(200).send(updateStatus);
+      res.status(200).send({ ok: true, message: '상태가 변경되었습니다.' });
     } catch (err) {
       next(err);
     }
@@ -135,14 +116,9 @@ class PostController {
   // 거래글 삭제
   deletePost = async (req, res, next) => {
     try {
-      // const { userId } = res.locals.user;
-      const userId = 1; // 임시
+      await this.postService.deletePost(req, res);
 
-      const { postId } = req.params;
-
-      const deletePost = await this.postService.deletePost(userId, postId);
-
-      return res.status(200).send({ data: deletePost });
+      res.status(200).send({ ok: true, message: '거래글이 삭제되었습니다.' });
     } catch (err) {
       next(err);
     }
@@ -156,7 +132,7 @@ class PostController {
 
       const updateWish = await this.postService.updateWish(userId, postId);
 
-      return res.status(200).json({ data: updateWish });
+      res.status(200).json({ data: updateWish });
     } catch (err) {
       next(err);
     }

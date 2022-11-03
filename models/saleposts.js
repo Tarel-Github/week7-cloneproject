@@ -52,6 +52,14 @@ module.exports = (sequelize, DataTypes) => {
           key: 'userId',
         },
       },
+      nickname: {
+        type: DataTypes.STRING(500),
+        allowNull: false,
+      },
+      profileImage: {
+        type: DataTypes.STRING(500),
+        allowNull: false,
+      },
       categoryId: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -86,7 +94,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       status: {
         type: DataTypes.INTEGER,
-        allowNull: false,
         defaultValue: 0,
       },
       wishCount: {

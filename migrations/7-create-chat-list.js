@@ -6,40 +6,39 @@ module.exports = {
       chatListId: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
-        primaryKey: true
+        primaryKey: true,
       },
       postId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references:{
+        references: {
           model: 'SalePosts',
-          key:'postId'
-        }
+          key: 'postId',
+        },
       },
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references:{
+        references: {
           model: 'Users',
-          key:'userId'
-        }
+          key: 'userId',
+        },
       },
       lastMessage: {
         type: Sequelize.STRING,
         allowNull: false,
       },
       createdAt: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       updatedAt: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: false,
-      }
-  
+      },
     });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('ChatList');
-  }
+  },
 };

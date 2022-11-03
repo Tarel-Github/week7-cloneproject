@@ -3,9 +3,16 @@ const router = express.Router();
 
 const UserController = require('./user.controller');
 const userController = new UserController();
+const multerS3 = require('../middlewares/imageUploadMiddleware');
+const multer = new multerS3();
 const loginMiddleware = require('../middlewares/authLoginUserMiddleware');
 
-router.post('/signup', loginMiddleware, userController.signup);
+router.post(
+  '/signup',
+  loginMiddleware,
+  multer.upload.single('profileImage'),
+  userController.signup
+);
 router.post('/login', loginMiddleware, userController.login);
 router.post('/signup/emailDup', userController.emailDup);
 router.post('/signup/nicknameDup', userController.nicknameDup);

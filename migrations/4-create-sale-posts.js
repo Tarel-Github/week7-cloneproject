@@ -16,6 +16,14 @@ module.exports = {
           key: 'userId',
         },
       },
+      nickname: {
+        type: Sequelize.STRING(500),
+        allowNull: false,
+      },
+      profileImage: {
+        type: Sequelize.STRING(500),
+        allowNull: false,
+      },
       categoryId: {
         type: Sequelize.INTEGER,
         allowNull: false,

@@ -46,7 +46,12 @@ class MypageRepository {
   };
 
   // changeProfileImg 프로필 이미지 변경
-  async changeProfileImg(userId) {}
+  async changeProfileImg(userId, profileImage) {
+    await Users.update(
+      { profileImage, updatedAt: Date.now() },
+      { where: { userId } }
+    );
+  }
 
   // changeNickname 닉네임 변경
   changeNickname = async (userId, nickname) => {
@@ -60,6 +65,14 @@ class MypageRepository {
   changePassword = async (userId, password) => {
     await Users.update(
       { password, updatedAt: Date.now() },
+      { where: { userId } }
+    );
+  };
+
+  // locationId 변경
+  changeLocationId = async (userId, locationId) => {
+    await Users.update(
+      { locationId, updatedAt: Date.now() },
       { where: { userId } }
     );
   };
@@ -82,6 +95,11 @@ class MypageRepository {
   // postId로 판매글 조회
   getSaleslistByPostId = async (postId) => {
     return await SalePosts.findOne({ where: { postId } });
+  };
+
+  // 아이디 비밀번호로 유저 정보 조회
+  isUser = async (userId) => {
+    return await Users.findOne({ where: { userId } });
   };
 }
 

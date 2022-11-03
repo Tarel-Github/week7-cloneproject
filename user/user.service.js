@@ -39,7 +39,7 @@ class UserService {
         locationId: loginUser.locationId,
         createdAt: loginUser.createdAt,
       },
-      'secret_dang',
+      process.env.JWT_SECRET_KEY,
       {
         expiresIn: '1h',
       }

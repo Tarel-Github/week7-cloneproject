@@ -1,7 +1,5 @@
 const { SalePosts, Wishes, TransactionList } = require('../models');
 const { Op } = require('sequelize');
-const UserService = require('../user/user.service');
-const WishService = require('../wish/wish.service');
 
 class PostRepository {
   // 위치별 거래글 조회
@@ -20,7 +18,6 @@ class PostRepository {
       where: { categoryId },
       order: [['createdAt', 'DESC']],
     });
-    console.log('repo find by category', categoryPost);
 
     return categoryPost;
   };
@@ -29,37 +26,45 @@ class PostRepository {
   findPostByTitle = async (title) => {
     const titlePost = await SalePosts.findAll({
       where: { title: { [Op.like]: `%${title}%` } },
-      order: [['createdAt', 'DESC']],
+      order: [['updatedAt', 'DESC']],
     });
 
     return titlePost;
+  };
+
+  // 사용자별 거래글 조회
+  findPostByUser = async (userId) => {
+    const otherPosts = await SalePosts.findAll({
+      attributes: ['postId', 'title', 'price', 'postImgUrl'],
+      where: { userId },
+      order: [['updatedAt', 'DESC']],
+      limit: 4,
+    });
+
+    return otherPosts;
   };
 
   // 거래글 상세 조회
   findOnePost = async (postId) => {
     const findOnePost = await SalePosts.findOne({
       where: { postId: postId },
-      // include: {
-      //     model: UserService,
-      //     attributes: [],
-      // },
     });
-    console.log('repo detail post', findOnePost);
 
     return findOnePost;
   };
 
   // 찜 여부 확인
   isWish = async (postId) => {
-    const isWish = await Wishes.findOne({ where: { postId } });
+    let isWish = await Wishes.findOne({ where: { postId } });
 
-    console.log('repo isWish', isWish);
-
+    isWish ? (isWish = true) : (isWish = false);
     return isWish;
   };
 
   // 거래글 생성
   createPost = async (post) => {
+    console.log(`nickname: ${post.nickname}`);
+
     const createPost = await SalePosts.create({
       ...post,
       createdAt: String(Date.now()),
@@ -70,131 +75,106 @@ class PostRepository {
   };
 
   // 거래글 수정
-  updatePost = async (
-    postId,
-    userId,
-    categoryId,
-    locationId,
-    title,
-    content,
-    postImgUrl,
-    price
-  ) => {
+  updatePost = async (postId, post) => {
     const updatePost = await SalePosts.update(
       {
-        categoryId,
-        title,
-        content,
-        postImgUrl,
-        price,
-        updatedAt: Date.now() + '',
+        ...post,
+        updatedAt: String(Date.now()),
       },
-      { where: { postId: postId } }
+      { where: { postId } }
     );
 
-    console.log('repo update', updatePost);
-
-    return updatePost;
+    if (updatePost) {
+      return { message: '거래글이 수정되었습니다.' };
+    } else {
+      return { message: '수정 실패' };
+    }
   };
 
   // 거래글 status 수정
-  updateStatus = async (postId, userId, status) => {
+  updateStatus = async (post) => {
     const updateStatus = await SalePosts.update(
       {
-        status,
-        updatedAt: Date.now(),
+        ...post,
+        updatedAt: String(Date.now()),
       },
-      { where: { postId: postId } }
+      { where: { postId: post.postId } }
     );
 
-    console.log('repo update status', updateStatus);
-
-    return updateStatus;
+    if (updateStatus) {
+      return { message: '상태가 수정되었습니다.' };
+    } else {
+      return { message: '수정 실패' };
+    }
   };
 
   // 판매글 삭제
-  deletePost = async (userId, postId) => {
-    const deletePost = await SalePosts.destroy({ where: { userId, postId } });
+  deletePost = async (post) => {
+    const deletePost = await SalePosts.destroy({
+      where: { userId: post.userId, postId: post.postId },
+    });
 
-    console.log('repo delete');
+    if (deletePost) {
+      return { message: '거래글이 삭제되었습니다.' };
+    } else {
+      return { message: '삭제 실패' };
+    }
+  };
 
-    return deletePost;
+  // 찜목록
+  wishList = async (userId) => {
+    const wishList = await Wishes.findAll({
+      where: { userId: userId },
+    });
+
+    return wishList;
+  };
+
+  // findWish
+  findWish = async (userId, postId) => {
+    const updateWish = await Wishes.findOne({
+      where: { userId, postId },
+    });
+
+    return updateWish;
+  };
+
+  // 찜하기
+  createWish = async (userId, postId) => {
+    await Wishes.create({
+      userId,
+      postId,
+      createdAt: String(Date.now()),
+    });
+  };
+
+  // 찜하기 취소
+  deleteWish = async (userId, postId) => {
+    await Wishes.destroy({
+      where: { postId, userId },
+    });
+  };
+
+  // wishCount 증가
+  increment = async (postId) => {
+    await SalePosts.increment({ wishCount: 1 }, { where: { postId } });
+  };
+
+  // wishCount 감소
+  decrement = async (postId) => {
+    const decrement = await SalePosts.decrement(
+      { wishCount: 1 },
+      { where: { postId } }
+    );
+
+    return decrement;
+  };
+
+  // 거래내역 추가
+  createTransaction = async (postId, userId) => {
+    const createTransaction = await TransactionList.create(postId, userId);
+
+    return createTransaction;
   };
 }
-
-// 찜목록
-wishList = async (userId) => {
-  const wishList = await Wishes.findAll({
-    where: { userId: userId },
-  });
-
-  console.log('repo wishList');
-
-  return wishList;
-};
-
-// findWish
-findWish = async (userId, postId) => {
-  const updateWish = await Wishes.findOne({
-    where: { userId: userId, postId: postId },
-  });
-
-  console.log('repo findWish');
-
-  return updateWish;
-};
-
-// 찜하기
-createWish = async (postId, userId) => {
-  const createWish = await Wishes.create(postId, userId);
-
-  console.log('repo createWish');
-
-  return createWish;
-};
-
-// 찜하기 취소
-deleteWish = async (postId, userId) => {
-  const deleteWish = await Wishes.destroy({
-    where: postId,
-    userId,
-  });
-
-  console.log('repo deleteWish');
-
-  return deleteWish;
-};
-
-// wishCount 증가
-increment = async (postId) => {
-  const increment = await SalePosts.increment(
-    { wishCount: 1 },
-    { where: postId }
-  );
-
-  console.log('repo increment');
-
-  return increment;
-};
-
-// wishCount 감소
-decrement = async (postId) => {
-  const decrement = await SalePosts.decrement(
-    { wishCount: 1 },
-    { where: postId }
-  );
-
-  console.log('repo decrement');
-
-  return decrement;
-};
-
-// 거래내역 추가
-createTransaction = async (postId, userId) => {
-  const createTransaction = await TransactionList.create(postId, userId);
-
-  console.log('repo create transaction');
-
-  return createTransaction;
-};
 module.exports = PostRepository;

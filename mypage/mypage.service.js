@@ -72,8 +72,18 @@ class MypageService {
   // changeProfileImg 프로필 이미지 변경
   async changeProfileImg(req, res) {
     const { userId } = res.locals.user;
-    await this.mypageRepository.changeProfileImg(userId);
-    return result;
+
+    // 파일이 있으면 key값으로 이름을 정해주고 없으면 null
+    const imageFileName = req.file ? req.file.key : null;
+
+    // imageFileName에 파일명이 들어 갔으면 s3 url주소를 추가
+    const profileImage = imageFileName
+      ? process.env.S3_STORAGE_URL + imageFileName
+      : 'https://d1unjqcospf8gs.cloudfront.net/assets/users/default_profile_80-b61ffca3ea2415f86ca30e1d04c2c480d165fdaf778a82b4ce025b21ac4333a0.png';
+
+    console.log(`imageFileName = ${profileImage}`);
+
+    await this.mypageRepository.changeProfileImg(userId, profileImage);
   }
 
   // changeNickname 닉네임 변경
@@ -89,14 +99,31 @@ class MypageService {
   // changePassword 비밀번호 변경
   async changePassword(req, res) {
     const { userId } = res.locals.user;
-    const { password } = req.body;
+    const { oldPassword, newPassword, confirm } = req.body;
 
-    const newPassword = await bcrypt.hash(
-      password,
+    const isUser = await this.mypageRepository.isUser(userId, oldPassword);
+
+    const auth = await bcrypt.compare(oldPassword, isUser.password);
+    if (!auth) throw new Error('비밀번호를 확인해주세요.');
+
+    if (newPassword !== confirm) throw new Error('비밀번호를 확인해주세요.');
+
+    const hashedPassword = await bcrypt.hash(
+      newPassword,
       Number(process.env.BCRYPT_SALT_ROUNDS)
-    ); // 임시임시
+    );
 
-    await this.mypageRepository.changePassword(userId, newPassword);
+    await this.mypageRepository.changePassword(userId, hashedPassword);
+  }
+
+  // locationId 변경
+  async changeLocationId(req, res) {
+    const { userId } = res.locals.user;
+    const { locationId } = req.body;
+
+    console.log(locationId);
+
+    await this.mypageRepository.changeLocationId(userId, locationId);
   }
 
   // getMypage 내 정보 조회
